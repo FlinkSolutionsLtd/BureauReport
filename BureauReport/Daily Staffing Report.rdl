@@ -389,7 +389,7 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                         <ActionInfo>
                                           <Actions>
                                             <Action>
-                                              <Hyperlink>=IIf(Fields!rr_id.Value Is Nothing, "", "javascript:void(window.open('http://localhost:65488/bureau/burform.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;ispopup=1','_blank'))")</Hyperlink>
+                                              <Hyperlink>=IIf(Fields!rr_id.Value Is Nothing, "", "javascript:void(window.open('https://cmhbureau.azurewebsites.net/bureau/burform.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;ispopup=1','_blank'))")</Hyperlink>
                                             </Action>
                                           </Actions>
                                         </ActionInfo>
@@ -1415,7 +1415,7 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                                                           <ActionInfo>
                                                                             <Actions>
                                                                               <Action>
-                                                                                <Hyperlink>=IIf(Fields!rr_id.Value is nothing,"","javascript:void(window.open('http://localhost:65488/bureau/burform.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;ispopup=1','_blank'))")</Hyperlink>
+                                                                                <Hyperlink>=IIf(Fields!rr_id.Value is nothing,"","javascript:void(window.open('https://cmhbureau.azurewebsites.net/bureau/burform.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;ispopup=1','_blank'))")</Hyperlink>
                                                                               </Action>
                                                                             </Actions>
                                                                           </ActionInfo>
@@ -2452,7 +2452,7 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                                       <ActionInfo>
                                                         <Actions>
                                                           <Action>
-                                                            <Hyperlink>=IIf(Fields!rr_id.Value Is Nothing, "", "javascript:void(window.open('http://localhost:65488/bureau/burform.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;ispopup=1','_blank'))")</Hyperlink>
+                                                            <Hyperlink>=IIf(Fields!rr_id.Value Is Nothing, "", "javascript:void(window.open('https://cmhbureau.azurewebsites.net/bureau/burform.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;ispopup=1','_blank'))")</Hyperlink>
                                                           </Action>
                                                         </Actions>
                                                       </ActionInfo>
@@ -3128,7 +3128,7 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                                               <ActionInfo>
                                                                 <Actions>
                                                                   <Action>
-                                                                    <Hyperlink>="javascript:void(window.open('http://localhost:65488/bureau/noteform.asp?locid=" &amp; Fields!loc_id.Value &amp; "&amp;ispopup=1&amp;starttime=" &amp; Fields!shift_code.Value &amp; "&amp;reqdate=" &amp; Format(Parameters!start.Value,"dd/MM/yyyy") &amp; "','_blank'))"</Hyperlink>
+                                                                    <Hyperlink>="javascript:void(window.open('https://cmhbureau.azurewebsites.net/bureau/noteform.asp?locid=" &amp; Fields!loc_id.Value &amp; "&amp;ispopup=1&amp;starttime=" &amp; Fields!shift_code.Value &amp; "&amp;reqdate=" &amp; Format(Parameters!start.Value,"dd/MM/yyyy") &amp; "','_blank'))"</Hyperlink>
                                                                   </Action>
                                                                 </Actions>
                                                               </ActionInfo>
@@ -3231,7 +3231,7 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                                           <ActionInfo>
                                                             <Actions>
                                                               <Action>
-                                                                <Hyperlink>=IIf(Fields!rr_id.Value Is Nothing Or Max(Fields!is_bureau.Value,"USER") = 0, "", "javascript:void(window.open('http://localhost:65488/bureau/noteform.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;ispopup=1','_blank'))")</Hyperlink>
+                                                                <Hyperlink>=IIf(Fields!rr_id.Value Is Nothing Or Max(Fields!is_bureau.Value,"USER") = 0, "", "javascript:void(window.open('https://cmhbureau.azurewebsites.net/bureau/noteform.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;ispopup=1','_blank'))")</Hyperlink>
                                                               </Action>
                                                             </Actions>
                                                           </ActionInfo>

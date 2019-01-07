@@ -949,7 +949,7 @@ where user_id = @UserID</CommandText>
                           <ActionInfo>
                             <Actions>
                               <Action>
-                                <Hyperlink>=IIf(Globals!ReportServerUrl = "http://vmmh0sql005/reports","http://localhost:65488","http://localhost:65488") &amp; "/bureau/burform.asp?typecode=3&amp;reqid=" &amp; Fields!rr_id.Value &amp; "&amp;lid=" &amp; Fields!lid.Value</Hyperlink>
+                                <Hyperlink>=IIf(Globals!ReportServerUrl = "http://vmmh0sql005/reports","https://cmhbureau.azurewebsites.net","https://cmhbureau.azurewebsites.net") &amp; "/bureau/burform.asp?typecode=3&amp;reqid=" &amp; Fields!rr_id.Value &amp; "&amp;lid=" &amp; Fields!lid.Value</Hyperlink>
                               </Action>
                             </Actions>
                           </ActionInfo>
@@ -2411,7 +2411,7 @@ Staff Name</Value>
                           <ActionInfo>
                             <Actions>
                               <Action>
-                                <Hyperlink>=IIf(Globals!ReportServerUrl = "http://vmmh0sql005/reports", "http://localhost:65488", "http://localhost:65488") &amp; "/bureau/dailyform.asp?lid=" &amp; Fields!loc_id.Value</Hyperlink>
+                                <Hyperlink>=IIf(Globals!ReportServerUrl = "http://vmmh0sql005/reports", "https://cmhbureau.azurewebsites.net", "https://cmhbureau.azurewebsites.net") &amp; "/bureau/dailyform.asp?lid=" &amp; Fields!loc_id.Value</Hyperlink>
                               </Action>
                             </Actions>
                           </ActionInfo>
@@ -2959,7 +2959,7 @@ Staff Name</Value>
             <ActionInfo>
               <Actions>
                 <Action>
-                  <Hyperlink>=IIf(Globals!ReportServerUrl = "http://vmmh0sql005/reports","http://localhost:65488","http://localhost:65488") &amp; "/Bureau/reqform.asp?lid=" &amp; Parameters!locid.Value</Hyperlink>
+                  <Hyperlink>=IIf(Globals!ReportServerUrl = "http://vmmh0sql005/reports","https://cmhbureau.azurewebsites.net","https://cmhbureau.azurewebsites.net") &amp; "/Bureau/reqform.asp?lid=" &amp; Parameters!locid.Value</Hyperlink>
                 </Action>
               </Actions>
             </ActionInfo>
@@ -3042,7 +3042,7 @@ Staff Name</Value>
             <ActionInfo>
               <Actions>
                 <Action>
-                  <Hyperlink>=IIf(Globals!ReportServerUrl = "http://vmmh0sql005/reports","http://localhost:65488","http://localhost:65488") &amp; "/bureau/dailyform.asp?lid=" &amp; Parameters!locid.Value &amp; "&amp;isnew=1"</Hyperlink>
+                  <Hyperlink>=IIf(Globals!ReportServerUrl = "http://vmmh0sql005/reports","https://cmhbureau.azurewebsites.net","https://cmhbureau.azurewebsites.net") &amp; "/bureau/dailyform.asp?lid=" &amp; Parameters!locid.Value &amp; "&amp;isnew=1"</Hyperlink>
                 </Action>
               </Actions>
             </ActionInfo>

@@ -1381,7 +1381,7 @@ Type</Value>
                           <ActionInfo>
                             <Actions>
                               <Action>
-                                <Hyperlink>=IIf(Globals!ReportServerUrl="https://nth-reports.healthcare.huarahi.health.govt.nz","http://staffnet/","http://localhost:65488/") &amp; "bureau/burform.asp" &amp; Fields!querystring.Value &amp; "&amp;rpt=" &amp; Globals!ReportName &amp; "&amp;rethosp=" &amp; Parameters!hosp.Value &amp; "&amp;retloc=" &amp; Parameters!locid.Value &amp; "&amp;retstart=" &amp; Parameters!start.Value &amp; "&amp;retend=" &amp; Parameters!end.Value &amp; "&amp;retshift=" &amp; Join(Parameters!shift.Value,";") &amp; "&amp;retstatus=" &amp; Join(Parameters!status.Value,";")</Hyperlink>
+                                <Hyperlink>=IIf(Globals!ReportServerUrl="https://nth-reports.healthcare.huarahi.health.govt.nz","http://staffnet/","https://cmhbureau.azurewebsites.net/") &amp; "bureau/burform.asp" &amp; Fields!querystring.Value &amp; "&amp;rpt=" &amp; Globals!ReportName &amp; "&amp;rethosp=" &amp; Parameters!hosp.Value &amp; "&amp;retloc=" &amp; Parameters!locid.Value &amp; "&amp;retstart=" &amp; Parameters!start.Value &amp; "&amp;retend=" &amp; Parameters!end.Value &amp; "&amp;retshift=" &amp; Join(Parameters!shift.Value,";") &amp; "&amp;retstatus=" &amp; Join(Parameters!status.Value,";")</Hyperlink>
                               </Action>
                             </Actions>
                           </ActionInfo>
