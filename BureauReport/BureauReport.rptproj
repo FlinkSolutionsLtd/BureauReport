@@ -5,7 +5,7 @@
     <OutputPath>bin\Debug</OutputPath>
     <ErrorLevel>2</ErrorLevel>
     <OverwriteDatasets>False</OverwriteDatasets>
-    <OverwriteDataSources>True</OverwriteDataSources>
+    <OverwriteDataSources>False</OverwriteDataSources>
     <TargetServerVersion>SSRS2016</TargetServerVersion>
     <Platform>Win32</Platform>
     <TargetReportFolder>BureauReport</TargetReportFolder>
@@ -60,9 +60,6 @@
     <Report Include="Bureau Signon Sheet.rdl" />
     <Report Include="Daily Staffing Report.rdl" />
     <Report Include="Daily Staffing.rdl" />
-    <Report Include="Request List.rdl" />
-    <Report Include="Staffing Numbers Form.rdl" />
-    <Report Include="Staffing Numbers.rdl" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Reporting Services\Microsoft.ReportingServices.MSBuilder.targets" />
 </Project>
