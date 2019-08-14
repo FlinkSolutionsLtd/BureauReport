@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedDataSet xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/shareddatasetdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <DataSet Name="DataSet1">
+    <Query>
+      <DataSourceReference>BureauSQL</DataSourceReference>
+      <CommandText>/*
+select distinct Division, DivisionSort 
+from dbo.vdimRC
+where exists (select '' from bureau.TLocation as l with (nolock) where l.rc_code = vdimRC.RC collate database_default)
+union all select '-All Divisions-',0
+order by 2, 1
+*/
+
+select 'All' as Division, 0 as DivisionSort</CommandText>
+    </Query>
+    <Fields>
+      <Field Name="Division">
+        <DataField>Division</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="DivisionSort">
+        <DataField>DivisionSort</DataField>
+        <rd:TypeName>System.Int32</rd:TypeName>
+      </Field>
+    </Fields>
+  </DataSet>
+</SharedDataSet>

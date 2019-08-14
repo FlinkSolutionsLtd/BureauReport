@@ -16,6 +16,9 @@
           <QueryParameter Name="@Division">
             <Value>=Parameters!Division.Value</Value>
           </QueryParameter>
+          <QueryParameter Name="@end">
+            <Value>=Parameters!end.Value</Value>
+          </QueryParameter>
           <QueryParameter Name="@start">
             <Value>=Parameters!start.Value</Value>
           </QueryParameter>
@@ -87,17 +90,9 @@
       </Fields>
     </DataSet>
     <DataSet Name="HOSP">
-      <Query>
-        <DataSourceName>Bureau</DataSourceName>
-        <CommandText>select l.lk_id, l.description 
-from bureau.TLookup as l with (nolock)
-inner join bureau.TLookupDomain as d with (nolock)
-on l.domain_id = d.domain_id
-where 
-l.is_deleted = 0
-and d.description = 'Hospital'</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>Hospitals</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="lk_id">
           <DataField>lk_id</DataField>
@@ -110,18 +105,9 @@ and d.description = 'Hospital'</CommandText>
       </Fields>
     </DataSet>
     <DataSet Name="Division">
-      <Query>
-        <DataSourceName>Bureau</DataSourceName>
-        <CommandText>/*
-select distinct Division, DivisionSort 
-from dbo.vdimRC
-where exists (select '' from bureau.TLocation as l with (nolock) where l.rc_code = vdimRC.RC collate database_default)
-union all select '-All Divisions-',0
-order by 2, 1
-*/
-
-select 'None' as Division, 0 as DivisionSort</CommandText>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>Divisions</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="Division">
           <DataField>Division</DataField>
@@ -152,7 +138,7 @@ select 'None' as Division, 0 as DivisionSort</CommandText>
                       <Value>=Fields!edt.Value</Value>
                     </SortExpression>
                   </SortExpressions>
-                  <Label>=Format(Fields!dt.Value,"dd MMM") &amp; " ~ " &amp; Format(Fields!edt.Value,"dd MMM yyyy")</Label>
+                  <Label>=Format(Fields!dt.Value,"dd MMM")</Label>
                 </ChartMember>
               </ChartMembers>
             </ChartCategoryHierarchy>
@@ -1321,7 +1307,7 @@ select 'None' as Division, 0 as DivisionSort</CommandText>
                       <Value>=Fields!edt.Value</Value>
                     </SortExpression>
                   </SortExpressions>
-                  <Label>=Format(Fields!dt.Value, "dd MMM") &amp; " ~ " &amp; Format(Fields!edt.Value, "dd MMM yyyy")</Label>
+                  <Label>=Format(Fields!dt.Value, "dd MMM")</Label>
                 </ChartMember>
               </ChartMembers>
             </ChartCategoryHierarchy>
@@ -1710,7 +1696,7 @@ select 'None' as Division, 0 as DivisionSort</CommandText>
                                         <Value>=Fields!edt.Value</Value>
                                       </SortExpression>
                                     </SortExpressions>
-                                    <Label>=Format(Fields!dt.Value, "dd MMM") &amp; " ~ " &amp; Format(Fields!edt.Value, "dd MMM yyyy")</Label>
+                                    <Label>=Format(Fields!dt.Value, "dd MMM")</Label>
                                   </ChartMember>
                                 </ChartMembers>
                               </ChartCategoryHierarchy>
@@ -2392,6 +2378,25 @@ select 'None' as Division, 0 as DivisionSort</CommandText>
                             <Color>RoyalBlue</Color>
                           </Style>
                         </TextRun>
+                        <TextRun>
+                          <Value>
+To </Value>
+                          <Style>
+                            <FontFamily>Calibri</FontFamily>
+                            <FontSize>8pt</FontSize>
+                            <FontWeight>Normal</FontWeight>
+                            <Color>RoyalBlue</Color>
+                          </Style>
+                        </TextRun>
+                        <TextRun>
+                          <Value>=Format(Parameters!end.Value,"dd/MM/yyyy")</Value>
+                          <Style>
+                            <FontFamily>Calibri</FontFamily>
+                            <FontSize>8pt</FontSize>
+                            <FontWeight>Normal</FontWeight>
+                            <Color>RoyalBlue</Color>
+                          </Style>
+                        </TextRun>
                       </TextRuns>
                       <Style />
                     </Paragraph>
@@ -2504,17 +2509,16 @@ select 'None' as Division, 0 as DivisionSort</CommandText>
     </ReportParameter>
     <ReportParameter Name="start">
       <DataType>DateTime</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>=CDate("22/06/2015")</Value>
-        </Values>
-      </DefaultValue>
       <Prompt>Date From</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="end">
+      <DataType>DateTime</DataType>
+      <Prompt>Date To</Prompt>
     </ReportParameter>
   </ReportParameters>
   <ReportParametersLayout>
     <GridLayoutDefinition>
-      <NumberOfColumns>2</NumberOfColumns>
+      <NumberOfColumns>3</NumberOfColumns>
       <NumberOfRows>1</NumberOfRows>
       <CellDefinitions>
         <CellDefinition>
@@ -2526,6 +2530,11 @@ select 'None' as Division, 0 as DivisionSort</CommandText>
           <ColumnIndex>1</ColumnIndex>
           <RowIndex>0</RowIndex>
           <ParameterName>start</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>2</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>end</ParameterName>
         </CellDefinition>
       </CellDefinitions>
     </GridLayoutDefinition>

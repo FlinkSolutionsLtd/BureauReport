@@ -13,14 +13,16 @@
       <Query>
         <DataSourceName>Bureau</DataSourceName>
         <QueryParameters>
-          <QueryParameter Name="@periodtype">
-            <Value>=Parameters!periodtype.Value</Value>
+          <QueryParameter Name="@start">
+            <Value>=Parameters!start.Value</Value>
           </QueryParameter>
-          <QueryParameter Name="@period">
-            <Value>=Parameters!period.Value</Value>
+          <QueryParameter Name="@end">
+            <Value>=Parameters!end.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>;with pad as
+        <CommandText>set datefirst 1; --monday = 1
+
+;with pad as
 (
 select distinct
 	 Division
@@ -34,7 +36,7 @@ select distinct
 	,major_group
 	,major_group_sort
 from 
-	 [WDHB_Research].[bureau].[vBureauRequests] as r
+	 [bureau].[vBureauRequests] as r
 	 cross join (	 
 		select 'RN' as minor_grouping
 		union all select 'EN'
@@ -97,13 +99,12 @@ select
 	--,req_type
 	--,hrs
 	,shifts
-	,case
-	 when @periodtype = 'MT' then month_end 
-	 else fortnight_end
-	 end as period_end
+	,dateadd(day,-datepart(weekday,shift_date)+1,shift_date) as period_end
 	,shift_date
 from
-	 [WDHB_Research].[bureau].[vBureauRequests] as r
+	 [bureau].[vBureauRequests] as r
+where
+      shift_date between @start and @end
 union all
 select
 	 major_group
@@ -114,7 +115,7 @@ select
 	,loc_description
 	,Division
 	,null
-	,@period
+	,null
 	,null
 from 
 	 pad
@@ -139,7 +140,7 @@ from
 	 t
 where
 	 1=1
-	 and period_end = @period</CommandText>
+	 </CommandText>
       </Query>
       <Fields>
         <Field Name="major_grouping">
@@ -176,7 +177,7 @@ where
         </Field>
         <Field Name="period_end">
           <DataField>period_end</DataField>
-          <rd:TypeName>System.Object</rd:TypeName>
+          <rd:TypeName>System.DateTime</rd:TypeName>
         </Field>
         <Field Name="shift_date">
           <DataField>shift_date</DataField>
@@ -196,53 +197,6 @@ where
 	Fields!minor_grouping.Value="HCA/Watch",3,
 	Fields!minor_grouping.Value="Watch",4,
 	Fields!minor_grouping.Value="HCA",5)</Value>
-        </Field>
-      </Fields>
-    </DataSet>
-    <DataSet Name="fts">
-      <Query>
-        <DataSourceName>Bureau</DataSourceName>
-        <QueryParameters>
-          <QueryParameter Name="@periodtype">
-            <Value>=Parameters!periodtype.Value</Value>
-          </QueryParameter>
-        </QueryParameters>
-        <CommandText>with fts as
-(
-	--based on an anchor date known as the start of a FN2 pay period. 
-	--without integration to leader, it'll have to rely on a point in time to determine a fortnight's range
-	select cast('2015-01-05' as datetime) as dt, dateadd(day,13,cast('2015-01-05' as datetime)) as edt
-	union all select dateadd(day,14,dt), dateadd(day,14,edt) from fts where dateadd(day,14,edt) &lt; getdate()
-) 
-,t as
-(
-select dt, edt
-from fts
-where edt &gt;= dateadd(year,-1,getdate())
-and @periodtype = 'FN'
-union all
-select distinct cal_month_first_date, cal_month_last_date
-from dim_date
-where cal_month_first_date &gt;= dateadd(year,-1,getdate())
-and cal_month_last_date &lt; getdate()
-and @periodtype = 'MT'
-)
-
-select
-	 convert(varchar(10),edt,103) as Label
-	,dateadd(day,0,datediff(day,0,edt)) as Val
-from
-	 t
-order by 2 desc</CommandText>
-      </Query>
-      <Fields>
-        <Field Name="Label">
-          <DataField>Label</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="Val">
-          <DataField>Val</DataField>
-          <rd:TypeName>System.DateTime</rd:TypeName>
         </Field>
       </Fields>
     </DataSet>
@@ -3578,7 +3532,7 @@ order by 2 desc</CommandText>
       <Width>19.90001cm</Width>
       <Page>
         <PageHeader>
-          <Height>2.18965cm</Height>
+          <Height>2.22493cm</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -3606,7 +3560,7 @@ order by 2 desc</CommandText>
                     </Paragraph>
                   </Paragraphs>
                   <rd:DefaultName>Textbox241</rd:DefaultName>
-                  <Top>0.7cm</Top>
+                  <Top>0.73528cm</Top>
                   <Height>1.48965cm</Height>
                   <Width>3cm</Width>
                   <Style>
@@ -3642,6 +3596,7 @@ order by 2 desc</CommandText>
                     </Paragraph>
                   </Paragraphs>
                   <rd:DefaultName>Textbox27</rd:DefaultName>
+                  <Top>0.03528cm</Top>
                   <Height>0.7cm</Height>
                   <Width>3cm</Width>
                   <ZIndex>1</ZIndex>
@@ -3694,6 +3649,7 @@ order by 2 desc</CommandText>
                     </Paragraph>
                   </Paragraphs>
                   <rd:DefaultName>Textbox241</rd:DefaultName>
+                  <Top>0.03528cm</Top>
                   <Left>17.57147cm</Left>
                   <Height>2.18965cm</Height>
                   <Width>2.32853cm</Width>
@@ -3709,57 +3665,58 @@ order by 2 desc</CommandText>
                     <PaddingBottom>2pt</PaddingBottom>
                   </Style>
                 </Textbox>
-                <Textbox Name="Textbox14">
+                <Textbox Name="Textbox12">
                   <KeepTogether>true</KeepTogether>
                   <Paragraphs>
                     <Paragraph>
                       <TextRuns>
                         <TextRun>
-                          <Value>Period Ending
-</Value>
+                          <Value>Date Range</Value>
                           <Style>
                             <FontFamily>Calibri</FontFamily>
                             <FontSize>8pt</FontSize>
                             <Color>DimGray</Color>
                           </Style>
                         </TextRun>
+                      </TextRuns>
+                      <Style />
+                    </Paragraph>
+                    <Paragraph>
+                      <TextRuns>
                         <TextRun>
-                          <Value>=Parameters!period.Value</Value>
+                          <Value>From </Value>
                           <Style>
                             <FontFamily>Calibri</FontFamily>
                             <FontSize>8pt</FontSize>
                             <FontWeight>Normal</FontWeight>
-                            <Format>dd/MM/yyyy</Format>
                             <Color>RoyalBlue</Color>
                           </Style>
                         </TextRun>
                         <TextRun>
-                          <Value> (</Value>
+                          <Value>=Format(Parameters!start.Value,"dd/MM/yyyy")</Value>
                           <Style>
                             <FontFamily>Calibri</FontFamily>
                             <FontSize>8pt</FontSize>
                             <FontWeight>Normal</FontWeight>
-                            <Format>dd/MM/yyyy</Format>
                             <Color>RoyalBlue</Color>
                           </Style>
                         </TextRun>
                         <TextRun>
-                          <Value>=Parameters!periodtype.Label</Value>
+                          <Value>
+To </Value>
                           <Style>
                             <FontFamily>Calibri</FontFamily>
                             <FontSize>8pt</FontSize>
                             <FontWeight>Normal</FontWeight>
-                            <Format>dd/MM/yyyy</Format>
                             <Color>RoyalBlue</Color>
                           </Style>
                         </TextRun>
                         <TextRun>
-                          <Value>)</Value>
+                          <Value>=Format(Parameters!end.Value,"dd/MM/yyyy")</Value>
                           <Style>
                             <FontFamily>Calibri</FontFamily>
                             <FontSize>8pt</FontSize>
                             <FontWeight>Normal</FontWeight>
-                            <Format>dd/MM/yyyy</Format>
                             <Color>RoyalBlue</Color>
                           </Style>
                         </TextRun>
@@ -3768,9 +3725,10 @@ order by 2 desc</CommandText>
                     </Paragraph>
                   </Paragraphs>
                   <rd:DefaultName>Textbox1</rd:DefaultName>
-                  <Left>3.22187cm</Left>
+                  <Top>0.01764cm</Top>
+                  <Left>3.07896cm</Left>
                   <Height>2.18965cm</Height>
-                  <Width>6.07612cm</Width>
+                  <Width>8.02708cm</Width>
                   <ZIndex>3</ZIndex>
                   <Style>
                     <Border>
@@ -3785,7 +3743,7 @@ order by 2 desc</CommandText>
               </ReportItems>
               <KeepTogether>true</KeepTogether>
               <Left>0.00001cm</Left>
-              <Height>2.18965cm</Height>
+              <Height>2.22493cm</Height>
               <Width>19.9cm</Width>
               <Style>
                 <Border>
@@ -3815,38 +3773,13 @@ order by 2 desc</CommandText>
     </ReportSection>
   </ReportSections>
   <ReportParameters>
-    <ReportParameter Name="periodtype">
-      <DataType>String</DataType>
-      <Prompt>Period Type</Prompt>
-      <ValidValues>
-        <ParameterValues>
-          <ParameterValue>
-            <Value>FN</Value>
-            <Label>by Fortnight</Label>
-          </ParameterValue>
-          <ParameterValue>
-            <Value>MT</Value>
-            <Label>by Month</Label>
-          </ParameterValue>
-        </ParameterValues>
-      </ValidValues>
-    </ReportParameter>
-    <ReportParameter Name="period">
+    <ReportParameter Name="start">
       <DataType>DateTime</DataType>
-      <DefaultValue>
-        <DataSetReference>
-          <DataSetName>fts</DataSetName>
-          <ValueField>Val</ValueField>
-        </DataSetReference>
-      </DefaultValue>
-      <Prompt>Period Ending</Prompt>
-      <ValidValues>
-        <DataSetReference>
-          <DataSetName>fts</DataSetName>
-          <ValueField>Val</ValueField>
-          <LabelField>Label</LabelField>
-        </DataSetReference>
-      </ValidValues>
+      <Prompt>Date From</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="end">
+      <DataType>DateTime</DataType>
+      <Prompt>Date To</Prompt>
     </ReportParameter>
     <ReportParameter Name="HideCols">
       <DataType>Integer</DataType>
@@ -3882,12 +3815,12 @@ order by 2 desc</CommandText>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>0</RowIndex>
-          <ParameterName>periodtype</ParameterName>
+          <ParameterName>start</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>1</ColumnIndex>
           <RowIndex>0</RowIndex>
-          <ParameterName>period</ParameterName>
+          <ParameterName>end</ParameterName>
         </CellDefinition>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>

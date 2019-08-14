@@ -201,40 +201,9 @@
       </Fields>
     </DataSet>
     <DataSet Name="LOCS">
-      <Query>
-        <DataSourceName>Bureau</DataSourceName>
-        <QueryParameters>
-          <QueryParameter Name="@hosp">
-            <Value>=Parameters!hosp.Value</Value>
-          </QueryParameter>
-        </QueryParameters>
-        <CommandText>
-select 
-	 l.loc_id
-	,case 
-	 when lk.description = 'North Shore' then '[NSH] ' 
-	 when lk.description = 'Waitakere' then '[WTK] '
-	 when lk.description = 'Mental Health' then '[MH] '
-	 end + l.loc_description as loc_description
-	,l.rc_code
-	,l.trendcare_code
-	,1 as sort_order
-	,l.hospital_lk_id
-from 
-	 bureau.TLocation as l with (nolock)
-	 inner join bureau.TLookup as lk with (nolock)
-		on l.hospital_lk_id = lk.lk_id
-where
-	 1=1
-	 and l.is_deleted = 0
-	 and (l.hospital_lk_id = @hosp or @hosp = 0)
-union all
-select -1,'All Locations','','',-1,-1
-union all
-select 0,'MISC. Locations','','',0,-1
-
-order by sort_order, hospital_lk_id, 2</CommandText>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>AllLocations</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="loc_id">
           <DataField>loc_id</DataField>
@@ -252,12 +221,16 @@ order by sort_order, hospital_lk_id, 2</CommandText>
           <DataField>trendcare_code</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="sort_order">
-          <DataField>sort_order</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
-        </Field>
         <Field Name="hospital_lk_id">
           <DataField>hospital_lk_id</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="config_rpt_group">
+          <DataField>config_rpt_group</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="sort">
+          <DataField>sort</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
       </Fields>
@@ -682,6 +655,10 @@ order by sort_order, description</CommandText>
                     <CellContents>
                       <Textbox Name="Textbox60">
                         <CanGrow>true</CanGrow>
+                        <UserSort>
+                          <SortExpression>=Fields!designation.Value</SortExpression>
+                          <SortExpressionScope>req_id</SortExpressionScope>
+                        </UserSort>
                         <KeepTogether>true</KeepTogether>
                         <Paragraphs>
                           <Paragraph>
@@ -723,6 +700,10 @@ order by sort_order, description</CommandText>
                     <CellContents>
                       <Textbox Name="Textbox61">
                         <CanGrow>true</CanGrow>
+                        <UserSort>
+                          <SortExpression>=Fields!requesttype.Value</SortExpression>
+                          <SortExpressionScope>req_id</SortExpressionScope>
+                        </UserSort>
                         <KeepTogether>true</KeepTogether>
                         <Paragraphs>
                           <Paragraph>
@@ -765,6 +746,10 @@ Type</Value>
                     <CellContents>
                       <Textbox Name="Textbox40">
                         <CanGrow>true</CanGrow>
+                        <UserSort>
+                          <SortExpression>=Fields!reason.Value</SortExpression>
+                          <SortExpressionScope>req_id</SortExpressionScope>
+                        </UserSort>
                         <KeepTogether>true</KeepTogether>
                         <Paragraphs>
                           <Paragraph>
@@ -1381,7 +1366,7 @@ Type</Value>
                           <ActionInfo>
                             <Actions>
                               <Action>
-                                <Hyperlink>=IIf(Globals!ReportServerUrl="https://nth-reports.healthcare.huarahi.health.govt.nz","http://staffnet/","https://cmhbureau.azurewebsites.net/") &amp; "bureau/burform.asp" &amp; Fields!querystring.Value &amp; "&amp;rpt=" &amp; Globals!ReportName &amp; "&amp;rethosp=" &amp; Parameters!hosp.Value &amp; "&amp;retloc=" &amp; Parameters!locid.Value &amp; "&amp;retstart=" &amp; Parameters!start.Value &amp; "&amp;retend=" &amp; Parameters!end.Value &amp; "&amp;retshift=" &amp; Join(Parameters!shift.Value,";") &amp; "&amp;retstatus=" &amp; Join(Parameters!status.Value,";")</Hyperlink>
+                                <Hyperlink>=IIf(Globals!ReportServerUrl = "https://ssrs2016-acc.hanz.health.nz/ReportServer","https://bureau-cmh-acc.healthcare.huarahi.health.govt.nz","https://bureau-cmh.healthcare.huarahi.health.govt.nz") &amp; "/bureau/burform.asp" &amp; Fields!querystring.Value &amp; "&amp;rpt=" &amp; Globals!ReportName &amp; "&amp;rethosp=" &amp; Parameters!hosp.Value &amp; "&amp;retloc=" &amp; Parameters!locid.Value &amp; "&amp;retstart=" &amp; Parameters!start.Value &amp; "&amp;retend=" &amp; Parameters!end.Value &amp; "&amp;retshift=" &amp; Join(Parameters!shift.Value,";") &amp; "&amp;retstatus=" &amp; Join(Parameters!status.Value,";")</Hyperlink>
                               </Action>
                             </Actions>
                           </ActionInfo>
@@ -3549,19 +3534,13 @@ User</Value>
                   <Width>0.4cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>3.25812cm</Width>
+                  <Width>4.68792cm</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>0.4cm</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>3.12342cm</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>0.4cm</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>2.94979cm</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>0.4cm</Width>
@@ -3724,7 +3703,7 @@ User</Value>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Cancel/Own Staff</Value>
+                                  <Value>Cancel/Own Staff/Redeployed</Value>
                                   <Style>
                                     <FontFamily>Calibri Light</FontFamily>
                                   </Style>
@@ -3791,7 +3770,7 @@ User</Value>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>External Agency</Value>
+                                  <Value>Filled</Value>
                                   <Style>
                                     <FontFamily>Calibri Light</FontFamily>
                                   </Style>
@@ -3801,73 +3780,6 @@ User</Value>
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Textbox274</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>None</Style>
-                            </Border>
-                            <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Textbox276">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value />
-                                  <Style>
-                                    <FontFamily>Calibri Light</FontFamily>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Textbox276</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
-                            </Border>
-                            <BackgroundColor>Red</BackgroundColor>
-                            <VerticalAlign>Middle</VerticalAlign>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Textbox278">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>Bureau - Internal</Value>
-                                  <Style>
-                                    <FontFamily>Calibri Light</FontFamily>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Textbox278</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -4032,8 +3944,6 @@ User</Value>
                 <TablixMember />
                 <TablixMember />
                 <TablixMember />
-                <TablixMember />
-                <TablixMember />
               </TablixMembers>
             </TablixColumnHierarchy>
             <TablixRowHierarchy>
@@ -4051,7 +3961,7 @@ User</Value>
             <Top>4.30389cm</Top>
             <Left>0.3175cm</Left>
             <Height>0.75cm</Height>
-            <Width>21.10791cm</Width>
+            <Width>19.18792cm</Width>
             <ZIndex>1</ZIndex>
             <Style>
               <Border>
@@ -4643,7 +4553,7 @@ User</Value>
       <DataType>DateTime</DataType>
       <DefaultValue>
         <Values>
-          <Value>=Dateadd("d",0,Today())</Value>
+          <Value>=CDate("01/01/2019")'Dateadd("d",0,Today())</Value>
         </Values>
       </DefaultValue>
       <Prompt>Start Shift Date</Prompt>

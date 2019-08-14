@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedDataSet xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/shareddatasetdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <DataSet Name="DataSet1">
+    <Query>
+      <DataSourceReference>BureauSQL</DataSourceReference>
+      <DataSetParameters>
+        <DataSetParameter Name="@Service">
+          <ReadOnly>false</ReadOnly>
+          <Nullable>false</Nullable>
+          <OmitFromQuery>false</OmitFromQuery>
+          <rd:DbType>Object</rd:DbType>
+        </DataSetParameter>
+      </DataSetParameters>
+      <CommandText>select 
+	 l.loc_id
+	,l.loc_description
+	,l.rc_code + ' - ' + l.loc_description as full_description
+	,l.rc_code
+	,l.trendcare_code
+from 
+	 bureau.TLocation as l with (nolock)
+	 left join dbo.vdimRC as rc with (nolock)
+		on l.rc_code = rc.RC
+where
+	 l.is_deleted = 0	
+	 and (rc.Service in(select value from dbo.fMultiValueParam(@Service,';')) or @Service = '*')
+
+order by
+	3, 2</CommandText>
+    </Query>
+    <Fields>
+      <Field Name="loc_id">
+        <DataField>loc_id</DataField>
+        <rd:TypeName>System.Int32</rd:TypeName>
+      </Field>
+      <Field Name="loc_description">
+        <DataField>loc_description</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="full_description">
+        <DataField>full_description</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="rc_code">
+        <DataField>rc_code</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="trendcare_code">
+        <DataField>trendcare_code</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+    </Fields>
+  </DataSet>
+</SharedDataSet>

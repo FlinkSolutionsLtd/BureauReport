@@ -2,7 +2,7 @@
 <RptDataSource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Name="BureauSQL">
   <ConnectionProperties>
     <Extension>SQL</Extension>
-    <ConnectString>Data Source=tcp:flink-sql.database.windows.net;Initial Catalog=BUREAU_CMDHB_UAT</ConnectString>
+    <ConnectString>Data Source=VHAL0SQL015,2771;Initial Catalog=CMH_Bureau</ConnectString>
   </ConnectionProperties>
   <DataSourceID>cd57be9e-26ef-4155-b371-994d51811a74</DataSourceID>
 </RptDataSource>

@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedDataSet xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/shareddatasetdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <DataSet Name="DataSet1">
+    <Query>
+      <DataSourceReference>BureauSQL</DataSourceReference>
+      <CommandText>
+
+select 
+	 l.loc_id
+	,isnull(lk.description + ' - ','') + l.loc_description as loc_description
+	,l.rc_code
+	,l.trendcare_code
+	,l.hospital_lk_id
+	,l.config_rpt_group
+	,0 as sort
+from 
+	 bureau.TLocation as l with (nolock)
+	 inner join bureau.TLookup as lk with (nolock)
+		on l.hospital_lk_id = lk.lk_id
+where
+	 l.is_deleted = 0
+union all select 0, 'MISC. Location', '?', '?',0,'', -1 as sort
+union all select -1, 'All Locations', '?', '?', 0, '', -2 as sort
+order by 
+	 sort
+	,hospital_lk_id
+	,config_rpt_group
+	,2
+</CommandText>
+    </Query>
+    <Fields>
+      <Field Name="loc_id">
+        <DataField>loc_id</DataField>
+        <rd:TypeName>System.Int32</rd:TypeName>
+      </Field>
+      <Field Name="loc_description">
+        <DataField>loc_description</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="rc_code">
+        <DataField>rc_code</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="trendcare_code">
+        <DataField>trendcare_code</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="hospital_lk_id">
+        <DataField>hospital_lk_id</DataField>
+        <rd:TypeName>System.Int32</rd:TypeName>
+      </Field>
+      <Field Name="config_rpt_group">
+        <DataField>config_rpt_group</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+      <Field Name="sort">
+        <DataField>sort</DataField>
+        <rd:TypeName>System.Int32</rd:TypeName>
+      </Field>
+    </Fields>
+  </DataSet>
+</SharedDataSet>

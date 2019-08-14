@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SharedDataSet xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/shareddatasetdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <DataSet Name="DataSet1">
+    <Query>
+      <DataSourceReference>BureauSQL</DataSourceReference>
+      <CommandText>select l.lk_id, l.description 
+from bureau.TLookup as l with (nolock)
+inner join bureau.TLookupDomain as d with (nolock)
+on l.domain_id = d.domain_id
+where 
+l.is_deleted = 0
+and d.description = 'Hospital'</CommandText>
+    </Query>
+    <Fields>
+      <Field Name="lk_id">
+        <DataField>lk_id</DataField>
+        <rd:TypeName>System.Int32</rd:TypeName>
+      </Field>
+      <Field Name="description">
+        <DataField>description</DataField>
+        <rd:TypeName>System.String</rd:TypeName>
+      </Field>
+    </Fields>
+  </DataSet>
+</SharedDataSet>

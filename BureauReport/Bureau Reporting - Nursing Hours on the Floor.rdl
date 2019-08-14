@@ -13,11 +13,11 @@
       <Query>
         <DataSourceName>Bureau</DataSourceName>
         <QueryParameters>
+          <QueryParameter Name="@startdate">
+            <Value>=Parameters!startdate.Value</Value>
+          </QueryParameter>
           <QueryParameter Name="@enddate">
             <Value>=Parameters!enddate.Value</Value>
-          </QueryParameter>
-          <QueryParameter Name="@periodtype">
-            <Value>=Parameters!periodtype.Value</Value>
           </QueryParameter>
           <QueryParameter Name="@loc">
             <Value>=Parameters!loc.Value</Value>
@@ -30,11 +30,7 @@
 	,[charge_rc_code]
 	,[trendcare_code]
 	,[hospital]
-	,case
-	 when @periodtype = 'Day' then calendar_date
-	 when @periodtype = 'Week' then week_start_date
-	 when @periodtype = 'Month' then cal_month_first_date
-	 end as [shift_date]	
+	,dateadd(day,-datepart(weekday,shift_date)+1,shift_date) as [shift_date]	
 	,[shift_code]
 	,[desig]
 	,sum([vol]) as vol
@@ -62,29 +58,15 @@
 	 when req_type = 'Cover' then 'LightGrey'
 	 when req_type in('Watch','Acuity','Special') then 'RoyalBlue'
 	 end as line_colour
-	,case
-	 when @periodtype = 'Day' then 'Shift Date'
-	 when @periodtype = 'Week' then 'Week beginning'
-	 when @periodtype = 'Month' then 'Month'
-	 end as date_label
-	,case
-	 when @periodtype = 'Day' then 'dd-MMM'
-	 when @periodtype = 'Week' then 'dd-MMM'
-	 when @periodtype = 'Month' then 'MMM-yy'
-	 end as label_format
+	,'Week beginning' as date_label
+	,'dd-MMM' as label_format
 from 
-	 [WDHB_Research].[bureau].[vBureau_BudgetActual] as ba
+	 [bureau].[vBureau_BudgetActual] as ba
 	 inner join dbo.dim_date as dates 
 		on ba.shift_date = dates.calendar_date
 where
 	 not (shift_date &gt; getdate() and vol_type = 'actual')
-	 and shift_date between 
-		case @periodtype
-		when 'Day' then dateadd(day,- 24,@enddate) 
-		when 'Week' then dateadd(week,- 24,@enddate) 
-		when 'Month' then dateadd(month,- 24,@enddate) 
-		end 
-		and @enddate
+	 and shift_date between @startdate and @enddate
 	 and ba.loc_id in(@loc)
 
 group by
@@ -94,11 +76,7 @@ group by
 	,[charge_rc_code]
 	,[trendcare_code]
 	,[hospital]
-	,case
-	 when @periodtype = 'Day' then calendar_date
-	 when @periodtype = 'Week' then week_start_date
-	 when @periodtype = 'Month' then cal_month_first_date
-	 end 	
+	,dateadd(day,-datepart(weekday,shift_date)+1,shift_date)	
 	,[shift_code]
 	,[desig]
 	,[vol]
@@ -203,30 +181,14 @@ group by
       </Fields>
     </DataSet>
     <DataSet Name="LOCS">
-      <Query>
-        <DataSourceName>Bureau</DataSourceName>
+      <SharedDataSet>
+        <SharedDataSetReference>LocationsByService</SharedDataSetReference>
         <QueryParameters>
           <QueryParameter Name="@Service">
-            <Value>=Join(Parameters!Service.Value,";")</Value>
+            <Value>=Parameters!Service.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>select 
-	 l.loc_id
-	,l.loc_description
-	,l.rc_code + ' - ' + l.loc_description as full_description
-	,l.rc_code
-	,l.trendcare_code
-from 
-	 bureau.TLocation as l with (nolock)
-	 left join dbo.vdimRC as rc with (nolock)
-		on l.rc_code = rc.RC collate database_default
-where
-	 l.is_deleted = 0	
-	 and (rc.Service in(select value from dbo.fMultiValueParam(@Service,';')) or @Service = '*')
-
-order by
-	3, 2</CommandText>
-      </Query>
+      </SharedDataSet>
       <Fields>
         <Field Name="loc_id">
           <DataField>loc_id</DataField>
@@ -236,12 +198,12 @@ order by
           <DataField>loc_description</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="rc_code">
-          <DataField>rc_code</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
         <Field Name="full_description">
           <DataField>full_description</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="rc_code">
+          <DataField>rc_code</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="trendcare_code">
@@ -251,17 +213,9 @@ order by
       </Fields>
     </DataSet>
     <DataSet Name="HOSP">
-      <Query>
-        <DataSourceName>Bureau</DataSourceName>
-        <CommandText>select l.lk_id, l.description 
-from bureau.TLookup as l with (nolock)
-inner join bureau.TLookupDomain as d with (nolock)
-on l.domain_id = d.domain_id
-where 
-l.is_deleted = 0
-and d.description = 'Hospital'</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>Hospitals</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="lk_id">
           <DataField>lk_id</DataField>
@@ -274,13 +228,9 @@ and d.description = 'Hospital'</CommandText>
       </Fields>
     </DataSet>
     <DataSet Name="Division">
-      <Query>
-        <DataSourceName>Bureau</DataSourceName>
-        <CommandText>select distinct Division, DivisionSort 
-from dbo.vdimRC
-where exists (select '' from bureau.TLocation as l with (nolock) where l.rc_code = vdimRC.RC collate database_default)
-order by 2, 1</CommandText>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>Divisions</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="Division">
           <DataField>Division</DataField>
@@ -293,19 +243,14 @@ order by 2, 1</CommandText>
       </Fields>
     </DataSet>
     <DataSet Name="Service">
-      <Query>
-        <DataSourceName>Bureau</DataSourceName>
+      <SharedDataSet>
+        <SharedDataSetReference>Services</SharedDataSetReference>
         <QueryParameters>
           <QueryParameter Name="@Division">
-            <Value>=Join(Parameters!Division.Value,";")</Value>
+            <Value>=Parameters!Division.Value</Value>
           </QueryParameter>
         </QueryParameters>
-        <CommandText>select distinct Service from dbo.vdimRC
-where 
-(@Division = '*' or Division in(select value from dbo.fMultiValueParam(@Division,';')))
-and exists (select '' from bureau.TLocation as l with (nolock) where l.rc_code = vdimRC.RC collate database_default)
-order by 1</CommandText>
-      </Query>
+      </SharedDataSet>
       <Fields>
         <Field Name="Service">
           <DataField>Service</DataField>
@@ -740,15 +685,7 @@ order by 1</CommandText>
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>ACTUAL VS PLAN HOURS BY </Value>
-                    <Style>
-                      <FontFamily>Calibri Light</FontFamily>
-                      <FontSize>12pt</FontSize>
-                      <Color>#4a4a4a</Color>
-                    </Style>
-                  </TextRun>
-                  <TextRun>
-                    <Value>=Parameters!periodtype.Value</Value>
+                    <Value>ACTUAL VS PLAN HOURS BY WEEK</Value>
                     <Style>
                       <FontFamily>Calibri Light</FontFamily>
                       <FontSize>12pt</FontSize>
@@ -2784,7 +2721,7 @@ order by 1</CommandText>
                     <Paragraph>
                       <TextRuns>
                         <TextRun>
-                          <Value>25 </Value>
+                          <Value>=Format(Parameters!startdate.Value,"dd/MM/yyyy")</Value>
                           <Style>
                             <FontFamily>Calibri</FontFamily>
                             <FontSize>8pt</FontSize>
@@ -2793,30 +2730,7 @@ order by 1</CommandText>
                           </Style>
                         </TextRun>
                         <TextRun>
-                          <Value>=Parameters!periodtype.Value</Value>
-                          <Style>
-                            <FontFamily>Calibri</FontFamily>
-                            <FontSize>8pt</FontSize>
-                            <FontWeight>Normal</FontWeight>
-                            <Color>RoyalBlue</Color>
-                          </Style>
-                        </TextRun>
-                        <TextRun>
-                          <Value>s</Value>
-                          <Style>
-                            <FontFamily>Calibri</FontFamily>
-                            <FontSize>8pt</FontSize>
-                            <FontWeight>Normal</FontWeight>
-                            <Color>RoyalBlue</Color>
-                          </Style>
-                        </TextRun>
-                      </TextRuns>
-                      <Style />
-                    </Paragraph>
-                    <Paragraph>
-                      <TextRuns>
-                        <TextRun>
-                          <Value>to </Value>
+                          <Value> to </Value>
                           <Style>
                             <FontFamily>Calibri</FontFamily>
                             <FontSize>8pt</FontSize>
@@ -2968,30 +2882,9 @@ order by 1</CommandText>
     </ReportSection>
   </ReportSections>
   <ReportParameters>
-    <ReportParameter Name="periodtype">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>Day</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>Period Type</Prompt>
-      <ValidValues>
-        <ParameterValues>
-          <ParameterValue>
-            <Value>Day</Value>
-            <Label>Day</Label>
-          </ParameterValue>
-          <ParameterValue>
-            <Value>Week</Value>
-            <Label>Week</Label>
-          </ParameterValue>
-          <ParameterValue>
-            <Value>Month</Value>
-            <Label>Month</Label>
-          </ParameterValue>
-        </ParameterValues>
-      </ValidValues>
+    <ReportParameter Name="startdate">
+      <DataType>DateTime</DataType>
+      <Prompt>Date From</Prompt>
     </ReportParameter>
     <ReportParameter Name="enddate">
       <DataType>DateTime</DataType>
@@ -3000,7 +2893,7 @@ order by 1</CommandText>
           <Value>=Today</Value>
         </Values>
       </DefaultValue>
-      <Prompt>Shift Date To</Prompt>
+      <Prompt>Date To</Prompt>
     </ReportParameter>
     <ReportParameter Name="Division">
       <DataType>String</DataType>
@@ -3040,15 +2933,6 @@ order by 1</CommandText>
     </ReportParameter>
     <ReportParameter Name="loc">
       <DataType>Integer</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>8</Value>
-          <Value>11</Value>
-          <Value>12</Value>
-          <Value>18</Value>
-          <Value>25</Value>
-        </Values>
-      </DefaultValue>
       <Prompt>Locations</Prompt>
       <ValidValues>
         <DataSetReference>
@@ -3065,11 +2949,6 @@ order by 1</CommandText>
       <NumberOfColumns>2</NumberOfColumns>
       <NumberOfRows>3</NumberOfRows>
       <CellDefinitions>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>0</RowIndex>
-          <ParameterName>periodtype</ParameterName>
-        </CellDefinition>
         <CellDefinition>
           <ColumnIndex>1</ColumnIndex>
           <RowIndex>0</RowIndex>
@@ -3089,6 +2968,11 @@ order by 1</CommandText>
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>2</RowIndex>
           <ParameterName>loc</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>0</RowIndex>
+          <ParameterName>startdate</ParameterName>
         </CellDefinition>
       </CellDefinitions>
     </GridLayoutDefinition>

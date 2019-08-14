@@ -389,7 +389,7 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                         <ActionInfo>
                                           <Actions>
                                             <Action>
-                                              <Hyperlink>=IIf(Fields!rr_id.Value Is Nothing, "", "javascript:void(window.open('https://cmhbureau.azurewebsites.net/bureau/burform.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;ispopup=1','_blank'))")</Hyperlink>
+                                              <Hyperlink>=IIf(Fields!rr_id.Value Is Nothing, "", "javascript:void(window.open('" &amp; IIf(Globals!ReportServerUrl = "https://ssrs2016-acc.hanz.health.nz/ReportServer","https://bureau-cmh-acc.healthcare.huarahi.health.govt.nz","https://bureau-cmh.healthcare.huarahi.health.govt.nz") &amp; "burform.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;ispopup=1','_blank'))")</Hyperlink>
                                             </Action>
                                           </Actions>
                                         </ActionInfo>
@@ -507,6 +507,9 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                             </Filter>
                           </Filters>
                           <ZIndex>1</ZIndex>
+                          <Visibility>
+                            <Hidden>true</Hidden>
+                          </Visibility>
                           <Style>
                             <Border>
                               <Color>YellowGreen</Color>
@@ -1415,7 +1418,9 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                                                           <ActionInfo>
                                                                             <Actions>
                                                                               <Action>
-                                                                                <Hyperlink>=IIf(Fields!rr_id.Value is nothing,"","javascript:void(window.open('https://cmhbureau.azurewebsites.net/bureau/burform.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;ispopup=1','_blank'))")</Hyperlink>
+                                                                                <Hyperlink>=IIf(Fields!rr_id.Value is nothing,"","javascript:void(window.open('" &amp; 
+	IIf(Globals!ReportServerUrl = "https://ssrs2016-acc.hanz.health.nz/ReportServer","https://bureau-cmh-acc.healthcare.huarahi.health.govt.nz","https://bureau-cmh.healthcare.huarahi.health.govt.nz")
+	&amp; "/bureau/burform.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;ispopup=1','_blank'))")</Hyperlink>
                                                                               </Action>
                                                                             </Actions>
                                                                           </ActionInfo>
@@ -2452,7 +2457,7 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                                       <ActionInfo>
                                                         <Actions>
                                                           <Action>
-                                                            <Hyperlink>=IIf(Fields!rr_id.Value Is Nothing, "", "javascript:void(window.open('https://cmhbureau.azurewebsites.net/bureau/burform.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;ispopup=1','_blank'))")</Hyperlink>
+                                                            <Hyperlink>=IIf(Fields!rr_id.Value Is Nothing, "", "javascript:void(window.open('" &amp; IIf(Globals!ReportServerUrl = "https://ssrs2016-acc.hanz.health.nz/ReportServer","https://bureau-cmh-acc.healthcare.huarahi.health.govt.nz","https://bureau-cmh.healthcare.huarahi.health.govt.nz") &amp; "burform.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;ispopup=1','_blank'))")</Hyperlink>
                                                           </Action>
                                                         </Actions>
                                                       </ActionInfo>
@@ -2777,7 +2782,7 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                 </Style>
                               </TextRun>
                               <TextRun>
-                                <Value>All Placements are subject to change by the Duty Nurse Manager Pager # 93 1814</Value>
+                                <Value>All Placements are subject to change by the Duty Nurse Manager #021 463 392</Value>
                                 <Style>
                                   <FontFamily>Calibri Light</FontFamily>
                                   <FontSize>10.5pt</FontSize>
@@ -2812,7 +2817,7 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                       </Group>
                       <SortExpressions>
                         <SortExpression>
-                          <Value>=Fields!shift_code.Value</Value>
+                          <Value>=Switch(Fields!shift_code.Value="N",1,Fields!shift_code.Value="D",2,Fields!shift_code.Value="E",3)</Value>
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
@@ -2881,66 +2886,6 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                                           <Value>=Fields!shift_name.Value</Value>
                                                           <Style>
                                                             <FontFamily>Calibri Light</FontFamily>
-                                                            <Color>=Fields!conf_colour.Value</Color>
-                                                          </Style>
-                                                        </TextRun>
-                                                        <TextRun>
-                                                          <Value>: </Value>
-                                                          <Style>
-                                                            <FontFamily>Calibri Light</FontFamily>
-                                                            <Color>=Fields!conf_colour.Value</Color>
-                                                          </Style>
-                                                        </TextRun>
-                                                        <TextRun>
-                                                          <Value>=Fields!conf_status.Value</Value>
-                                                          <Style>
-                                                            <FontFamily>Calibri Light</FontFamily>
-                                                            <FontWeight>Bold</FontWeight>
-                                                            <Color>=Fields!conf_colour.Value</Color>
-                                                          </Style>
-                                                        </TextRun>
-                                                        <TextRun>
-                                                          <Value xml:space="preserve">   </Value>
-                                                          <Style>
-                                                            <FontFamily>Calibri Light</FontFamily>
-                                                            <Color>=Fields!conf_colour.Value</Color>
-                                                          </Style>
-                                                        </TextRun>
-                                                        <TextRun>
-                                                          <Value>=IIf(Globals!RenderFormat.IsInteractive And Max(Fields!is_bureau.Value,"USER") = 1,IIf(Fields!conf_status.Value="PROVISIONAL","confirm","unconfirm"),"")</Value>
-                                                          <ActionInfo>
-                                                            <Actions>
-                                                              <Action>
-                                                                <Drillthrough>
-                                                                  <ReportName>Staffing Numbers</ReportName>
-                                                                  <Parameters>
-                                                                    <Parameter Name="start">
-                                                                      <Value>=Parameters!start.Value</Value>
-                                                                    </Parameter>
-                                                                    <Parameter Name="hospital">
-                                                                      <Value>=Parameters!hospital.Value</Value>
-                                                                    </Parameter>
-                                                                    <Parameter Name="actshiftcode">
-                                                                      <Value>=Fields!shift_code.Value</Value>
-                                                                    </Parameter>
-                                                                    <Parameter Name="actstatus">
-                                                                      <Value>=IIf(Fields!conf_status.Value="PROVISIONAL","CONFIRMED","PROVISIONAL")</Value>
-                                                                    </Parameter>
-                                                                    <Parameter Name="isaction">
-                                                                      <Value>=Parameters!hospital.Value</Value>
-                                                                    </Parameter>
-                                                                    <Parameter Name="isaction2">
-                                                                      <Value>=Parameters!start.Value</Value>
-                                                                    </Parameter>
-                                                                  </Parameters>
-                                                                </Drillthrough>
-                                                              </Action>
-                                                            </Actions>
-                                                          </ActionInfo>
-                                                          <Style>
-                                                            <FontFamily>Calibri Light</FontFamily>
-                                                            <TextDecoration>Underline</TextDecoration>
-                                                            <Color>RoyalBlue</Color>
                                                           </Style>
                                                         </TextRun>
                                                       </TextRuns>
@@ -2955,7 +2900,7 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                                       <Color>=Fields!conf_colour.Value</Color>
                                                       <Style>None</Style>
                                                     </Border>
-                                                    <BackgroundColor>=Fields!conf_background_colour.Value</BackgroundColor>
+                                                    <BackgroundColor>Gainsboro</BackgroundColor>
                                                     <VerticalAlign>Middle</VerticalAlign>
                                                     <PaddingLeft>2pt</PaddingLeft>
                                                     <PaddingRight>2pt</PaddingRight>
@@ -2978,15 +2923,6 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                       </TablixMembers>
                                     </TablixRowHierarchy>
                                     <DataSetName>DATA</DataSetName>
-                                    <Filters>
-                                      <Filter>
-                                        <FilterExpression>=Fields!config_rpt_group_order.Value</FilterExpression>
-                                        <Operator>Equal</Operator>
-                                        <FilterValues>
-                                          <FilterValue DataType="Integer">-1</FilterValue>
-                                        </FilterValues>
-                                      </Filter>
-                                    </Filters>
                                     <Height>0.5cm</Height>
                                     <Width>9.44844cm</Width>
                                     <Style>
@@ -3128,7 +3064,7 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                                               <ActionInfo>
                                                                 <Actions>
                                                                   <Action>
-                                                                    <Hyperlink>="javascript:void(window.open('https://cmhbureau.azurewebsites.net/bureau/noteform.asp?locid=" &amp; Fields!loc_id.Value &amp; "&amp;ispopup=1&amp;starttime=" &amp; Fields!shift_code.Value &amp; "&amp;reqdate=" &amp; Format(Parameters!start.Value,"dd/MM/yyyy") &amp; "','_blank'))"</Hyperlink>
+                                                                    <Hyperlink>="javascript:void(window.open('" &amp; IIf(Globals!ReportServerUrl = "https://ssrs2016-acc.hanz.health.nz/ReportServer","https://bureau-cmh-acc.healthcare.huarahi.health.govt.nz","https://bureau-cmh.healthcare.huarahi.health.govt.nz") &amp; "noteform.asp?locid=" &amp; Fields!loc_id.Value &amp; "&amp;ispopup=1&amp;starttime=" &amp; Fields!shift_code.Value &amp; "&amp;reqdate=" &amp; Format(Parameters!start.Value,"dd/MM/yyyy") &amp; "','_blank'))"</Hyperlink>
                                                                   </Action>
                                                                 </Actions>
                                                               </ActionInfo>
@@ -3231,7 +3167,7 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                                           <ActionInfo>
                                                             <Actions>
                                                               <Action>
-                                                                <Hyperlink>=IIf(Fields!rr_id.Value Is Nothing Or Max(Fields!is_bureau.Value,"USER") = 0, "", "javascript:void(window.open('https://cmhbureau.azurewebsites.net/bureau/noteform.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;ispopup=1','_blank'))")</Hyperlink>
+                                                                <Hyperlink>=IIf(Fields!rr_id.Value Is Nothing Or Max(Fields!is_bureau.Value,"USER") = 0, "", "javascript:void(window.open('" &amp; IIf(Globals!ReportServerUrl = "https://ssrs2016-acc.hanz.health.nz/ReportServer","https://bureau-cmh-acc.healthcare.huarahi.health.govt.nz","https://bureau-cmh.healthcare.huarahi.health.govt.nz") &amp; "noteform.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;ispopup=1','_blank'))")</Hyperlink>
                                                               </Action>
                                                             </Actions>
                                                           </ActionInfo>
@@ -3428,6 +3364,9 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                             <Top>0.02208cm</Top>
                                             <Height>0.25876cm</Height>
                                             <Width>9.44845cm</Width>
+                                            <Visibility>
+                                              <Hidden>true</Hidden>
+                                            </Visibility>
                                             <Style>
                                               <Border>
                                                 <Style>None</Style>
@@ -3446,9 +3385,6 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                             <Style>None</Style>
                                             <Width>1.5pt</Width>
                                           </Border>
-                                          <TopBorder>
-                                            <Style>Solid</Style>
-                                          </TopBorder>
                                           <BottomBorder>
                                             <Style>Solid</Style>
                                             <Width>2.5pt</Width>
@@ -3456,6 +3392,7 @@ if @actshiftcode &lt;&gt; 'nothing' and @actstatus &lt;&gt; 'nothing'
                                           <BackgroundColor>White</BackgroundColor>
                                         </Style>
                                       </Rectangle>
+                                      <rd:Selected>true</rd:Selected>
                                     </CellContents>
                                   </TablixHeader>
                                   <TablixMembers>

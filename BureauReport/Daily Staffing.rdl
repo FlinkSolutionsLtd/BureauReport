@@ -113,36 +113,16 @@
           <DataField>bur_comments</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="isCancellable">
+          <DataField>isCancellable</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
       </Fields>
     </DataSet>
     <DataSet Name="LOCS">
-      <Query>
-        <DataSourceName>BUREAU</DataSourceName>
-        <CommandText>
-
-select 
-	 l.loc_id
-	,case 
-	 when lk.description = 'North Shore' then '[NSH] ' 
-	 when lk.description = 'Waitakere' then '[WTK] '
-	 when lk.description = 'Mental Health' then '[MH] '
-	 end + l.loc_description as loc_description
-	,l.rc_code
-	,l.trendcare_code
-	,l.hospital_lk_id
-	,0 as sort
-from 
-	 bureau.TLocation as l with (nolock)
-	 inner join bureau.TLookup as lk with (nolock)
-		on l.hospital_lk_id = lk.lk_id
-where
-	 l.is_deleted = 0
-union all select 0, 'MISC. Location', '?', '?',0, -1 as sort
-order by 
-	 sort
-	,hospital_lk_id
-	,2</CommandText>
-      </Query>
+      <SharedDataSet>
+        <SharedDataSetReference>AllLocations</SharedDataSetReference>
+      </SharedDataSet>
       <Fields>
         <Field Name="loc_id">
           <DataField>loc_id</DataField>
@@ -163,6 +143,10 @@ order by
         <Field Name="hospital_lk_id">
           <DataField>hospital_lk_id</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="config_rpt_group">
+          <DataField>config_rpt_group</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="sort">
           <DataField>sort</DataField>
@@ -206,27 +190,27 @@ order by
         </Field>
         <Field Name="Coord">
           <DataField>Coord</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
+          <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
         <Field Name="Orientee">
           <DataField>Orientee</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
+          <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
         <Field Name="RN">
           <DataField>RN</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
+          <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
         <Field Name="EN">
           <DataField>EN</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
+          <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
         <Field Name="HCA">
           <DataField>HCA</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
+          <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
         <Field Name="CNM">
           <DataField>CNM</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
+          <rd:TypeName>System.Decimal</rd:TypeName>
         </Field>
         <Field Name="Coord_Name">
           <DataField>Coord_Name</DataField>
@@ -263,6 +247,10 @@ order by
         <Field Name="seq_number">
           <DataField>seq_number</DataField>
           <rd:TypeName>System.Int64</rd:TypeName>
+        </Field>
+        <Field Name="sort_order">
+          <DataField>sort_order</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
       </Fields>
     </DataSet>
@@ -786,16 +774,19 @@ where user_id = @UserID</CommandText>
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>3cm</Width>
+                  <Width>2.9cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>3.01716cm</Width>
+                  <Width>2.75cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>3.84617cm</Width>
+                  <Width>3.66096cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.15481cm</Width>
+                  <Width>1cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.1704cm</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -949,12 +940,63 @@ where user_id = @UserID</CommandText>
                           <ActionInfo>
                             <Actions>
                               <Action>
-                                <Hyperlink>=IIf(Globals!ReportServerUrl = "http://vmmh0sql005/reports","https://cmhbureau.azurewebsites.net","https://cmhbureau.azurewebsites.net") &amp; "/bureau/burform.asp?typecode=3&amp;reqid=" &amp; Fields!rr_id.Value &amp; "&amp;lid=" &amp; Fields!lid.Value</Hyperlink>
+                                <Hyperlink>=IIf(Globals!ReportServerUrl = "https://ssrs2016-acc.hanz.health.nz/ReportServer","https://bureau-cmh-acc.healthcare.huarahi.health.govt.nz","https://bureau-cmh.healthcare.huarahi.health.govt.nz") &amp; "/bureau/burform.asp?typecode=3&amp;reqid=" &amp; Fields!rr_id.Value &amp; "&amp;lid=" &amp; Fields!lid.Value</Hyperlink>
                               </Action>
                             </Actions>
                           </ActionInfo>
                           <Visibility>
                             <Hidden>=IIf(Globals!RenderFormat.IsInteractive = True,False,True)</Hidden>
+                          </Visibility>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox69">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>cancel</Value>
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontWeight>Bold</FontWeight>
+                                    <TextDecoration>Underline</TextDecoration>
+                                    <Color>RoyalBlue</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox68</rd:DefaultName>
+                          <ActionInfo>
+                            <Actions>
+                              <Action>
+                                <Hyperlink>=IIf(Globals!ReportServerUrl = "https://ssrs2016-acc.hanz.health.nz/ReportServer","https://bureau-cmh-acc.healthcare.huarahi.health.govt.nz","https://bureau-cmh.healthcare.huarahi.health.govt.nz") &amp; "/bureau/reqform-cancel.asp?reqid=" &amp; Fields!rr_id.Value &amp; "&amp;lid=" &amp; Fields!lid.Value</Hyperlink>
+                              </Action>
+                            </Actions>
+                          </ActionInfo>
+                          <Visibility>
+                            <Hidden>=IIf(Globals!RenderFormat.IsInteractive = True,
+	IIf(Fields!isCancellable.Value = 1,False,True)
+	,True
+	)</Hidden>
                           </Visibility>
                           <Style>
                             <Border>
@@ -1109,6 +1151,44 @@ where user_id = @UserID</CommandText>
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Textbox30</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>LightGrey</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox14">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
+                                  <Style>
+                                    <FontFamily>Calibri</FontFamily>
+                                    <FontWeight>Normal</FontWeight>
+                                    <Color>RoyalBlue</Color>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox14</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -1315,6 +1395,45 @@ Staff Name</Value>
                     </TablixMember>
                   </TablixMembers>
                 </TablixMember>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>1.4cm</Size>
+                    <CellContents>
+                      <Textbox Name="Textbox12">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value />
+                                <Style>
+                                  <FontFamily>Calibri</FontFamily>
+                                  <Color>DimGray</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style>
+                              <TextAlign>Right</TextAlign>
+                            </Style>
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox12</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>LightGrey</Color>
+                            <Style>None</Style>
+                          </Border>
+                          <VerticalAlign>Bottom</VerticalAlign>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                </TablixMember>
               </TablixMembers>
             </TablixColumnHierarchy>
             <TablixRowHierarchy>
@@ -1339,7 +1458,7 @@ Staff Name</Value>
                   <TablixMembers>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.4cm</Size>
+                        <Size>1.3cm</Size>
                         <CellContents>
                           <Textbox Name="req_id2">
                             <CanGrow>true</CanGrow>
@@ -1808,7 +1927,7 @@ Staff Name</Value>
                 </TablixMember>
                 <TablixMember>
                   <TablixHeader>
-                    <Size>16.75614cm</Size>
+                    <Size>16.65614cm</Size>
                     <CellContents>
                       <Textbox Name="Textbox2">
                         <CanGrow>true</CanGrow>
@@ -1855,7 +1974,7 @@ Staff Name</Value>
             <Top>7.28125cm</Top>
             <Left>0.5525cm</Left>
             <Height>2.80292cm</Height>
-            <Width>27.77428cm</Width>
+            <Width>28.1375cm</Width>
             <Visibility>
               <Hidden>=IIf(Fields!rr_id.Value Is Nothing, True, False)</Hidden>
             </Visibility>
@@ -2411,7 +2530,7 @@ Staff Name</Value>
                           <ActionInfo>
                             <Actions>
                               <Action>
-                                <Hyperlink>=IIf(Globals!ReportServerUrl = "http://vmmh0sql005/reports", "https://cmhbureau.azurewebsites.net", "https://cmhbureau.azurewebsites.net") &amp; "/bureau/dailyform.asp?lid=" &amp; Fields!loc_id.Value</Hyperlink>
+                                <Hyperlink>=IIf(Globals!ReportServerUrl = "https://ssrs2016-acc.hanz.health.nz/ReportServer","https://bureau-cmh-acc.healthcare.huarahi.health.govt.nz","https://bureau-cmh.healthcare.huarahi.health.govt.nz") &amp; "/bureau/dailyform.asp?lid=" &amp; Fields!loc_id.Value</Hyperlink>
                               </Action>
                             </Actions>
                           </ActionInfo>
@@ -2875,7 +2994,10 @@ Staff Name</Value>
                   </Group>
                   <SortExpressions>
                     <SortExpression>
-                      <Value>=Fields!seq_number.Value</Value>
+                      <Value>=Fields!shift_date.Value</Value>
+                    </SortExpression>
+                    <SortExpression>
+                      <Value>=Fields!sort_order.Value</Value>
                     </SortExpression>
                   </SortExpressions>
                   <TablixMembers>
@@ -2885,6 +3007,14 @@ Staff Name</Value>
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>DAILY</DataSetName>
+            <SortExpressions>
+              <SortExpression>
+                <Value>=Fields!shift_date.Value</Value>
+              </SortExpression>
+              <SortExpression>
+                <Value>=Fields!sort_order.Value</Value>
+              </SortExpression>
+            </SortExpressions>
             <Top>3.56278cm</Top>
             <Left>0.5525cm</Left>
             <Height>2.5cm</Height>
@@ -2959,7 +3089,7 @@ Staff Name</Value>
             <ActionInfo>
               <Actions>
                 <Action>
-                  <Hyperlink>=IIf(Globals!ReportServerUrl = "http://vmmh0sql005/reports","https://cmhbureau.azurewebsites.net","https://cmhbureau.azurewebsites.net") &amp; "/Bureau/reqform.asp?lid=" &amp; Parameters!locid.Value</Hyperlink>
+                  <Hyperlink>=IIf(Globals!ReportServerUrl = "https://ssrs2016-acc.hanz.health.nz/ReportServer","https://bureau-cmh-acc.healthcare.huarahi.health.govt.nz","https://bureau-cmh.healthcare.huarahi.health.govt.nz") &amp; "/Bureau/reqform.asp?lid=" &amp; Parameters!locid.Value</Hyperlink>
                 </Action>
               </Actions>
             </ActionInfo>
@@ -3042,7 +3172,7 @@ Staff Name</Value>
             <ActionInfo>
               <Actions>
                 <Action>
-                  <Hyperlink>=IIf(Globals!ReportServerUrl = "http://vmmh0sql005/reports","https://cmhbureau.azurewebsites.net","https://cmhbureau.azurewebsites.net") &amp; "/bureau/dailyform.asp?lid=" &amp; Parameters!locid.Value &amp; "&amp;isnew=1"</Hyperlink>
+                  <Hyperlink>=IIf(Globals!ReportServerUrl = "https://ssrs2016-acc.hanz.health.nz/ReportServer","https://bureau-cmh-acc.healthcare.huarahi.health.govt.nz","https://bureau-cmh.healthcare.huarahi.health.govt.nz") &amp; "/bureau/dailyform.asp?lid=" &amp; Parameters!locid.Value &amp; "&amp;isnew=1"</Hyperlink>
                 </Action>
               </Actions>
             </ActionInfo>
@@ -3258,7 +3388,7 @@ Staff Name</Value>
                 <ActionInfo>
                   <Actions>
                     <Action>
-                      <Hyperlink>="https://ssrs.flink.co.nz/ReportServer/Pages/ReportViewer.aspx?%2fBureauReport%2fDaily+Staffing&amp;rs:Command=Render&amp;rs:Format=PDF&amp;rs:ClearSession=true&amp;locid=" &amp; Parameters!locid.Value</Hyperlink>
+                      <Hyperlink>=Globals!ReportServerUrl &amp; "/Pages/ReportViewer.aspx?%2fCMDHB Reports%2fCMH Applications%2fBureau%2fDaily+Staffing&amp;rs:Command=Render&amp;rs:Format=PDF&amp;rs:ClearSession=true&amp;locid=" &amp; Parameters!locid.Value</Hyperlink>
                     </Action>
                   </Actions>
                 </ActionInfo>
@@ -3368,6 +3498,14 @@ Staff Name</Value>
                         </TextRun>
                         <TextRun>
                           <Value>=Parameters!locid.Label</Value>
+                          <Style>
+                            <FontFamily>Calibri</FontFamily>
+                            <FontWeight>Normal</FontWeight>
+                            <Color>RoyalBlue</Color>
+                          </Style>
+                        </TextRun>
+                        <TextRun>
+                          <Value xml:space="preserve"> </Value>
                           <Style>
                             <FontFamily>Calibri</FontFamily>
                             <FontWeight>Normal</FontWeight>
